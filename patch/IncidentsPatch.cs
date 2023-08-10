@@ -26,32 +26,33 @@ namespace EventsMod.patch
         [HarmonyPrefix]
         public static void prefixPatch(ref TerrainFeatureSettings __instance)
         {
-            EventsMod.Log("SetWorldEnvironmentsPatch:: prefixPatch --> carregando Incidents", EventsMod.Logs.DEBUG);
-            SetWorldEnvironmentsPatch incidentsPatch = new SetWorldEnvironmentsPatch();
-            EventsMod.Log("SetWorldEnvironmentsPatch:: prefixPatch --> get incidentsName size " + incidentsName.Count(), EventsMod.Logs.DEBUG);
-            IEnumerable<TerrainFeatureIncident> lt = incidentsPatch.addIncidents(incidentsName);
-            EventsMod.Log("SetWorldEnvironmentsPatch:: prefixPatch --> carregando "+ lt.Count()+ " Incidents", EventsMod.Logs.INFO);
-            foreach (TerrainFeatureIncident incident in lt)
-            {
-                if (!TileSystem.Instance.CurrentIncidentTypes.ContainsKey(incident.Type))
+            if (bool.Parse(EventsMod.fmainconfig["EnabledMod"]?.ToString())) {
+                EventsMod.log("SetWorldEnvironmentsPatch:: prefixPatch --> carregando Incidents", EventsMod.Logs.DEBUG);
+                SetWorldEnvironmentsPatch incidentsPatch = new SetWorldEnvironmentsPatch();
+                EventsMod.log("SetWorldEnvironmentsPatch:: prefixPatch --> get incidentsName size " + incidentsName.Count(), EventsMod.Logs.DEBUG);
+                IEnumerable<TerrainFeatureIncident> lt = incidentsPatch.addIncidents(incidentsName);
+                EventsMod.log("SetWorldEnvironmentsPatch:: prefixPatch --> carregando " + lt.Count() + " Incidents", EventsMod.Logs.INFO);
+                foreach (TerrainFeatureIncident incident in lt)
                 {
-                    TileSystem.Instance.CurrentIncidentTypes.Add(incident.Type, incident);
-                    TileSystem.WorldContainsIncidents = true;
-                    EventsMod.Log("SetWorldEnvironmentsPatch:: TakePlantDrinkPatch --> adicionado Incident " + incident.Type, EventsMod.Logs.DEBUG);
+                    if (!TileSystem.Instance.CurrentIncidentTypes.ContainsKey(incident.Type))
+                    {
+                        TileSystem.Instance.CurrentIncidentTypes.Add(incident.Type, incident);
+                        TileSystem.WorldContainsIncidents = true;
+                        EventsMod.log("SetWorldEnvironmentsPatch:: TakePlantDrinkPatch --> adicionado Incident " + incident.Type, EventsMod.Logs.DEBUG);
+                    }
                 }
+                EventsMod.log("SetWorldEnvironmentsPatch:: prefixPatch --> carregado", EventsMod.Logs.INFO);
             }
-            EventsMod.Log("SetWorldEnvironmentsPatch:: prefixPatch --> carregado", EventsMod.Logs.INFO);
-
             //__instance.IncidentFeatures.AddRange(incidentsPatch.addIncidents(incidentsName));
         }
 
         private IEnumerable<TerrainFeatureIncident> addIncidents(List<string> incidentsName)
         {
-            EventsMod.Log("SetWorldEnvironmentsPatch:: addIncidents --> carregando Incidents", EventsMod.Logs.DEBUG);
+            EventsMod.log("SetWorldEnvironmentsPatch:: addIncidents --> carregando Incidents", EventsMod.Logs.DEBUG);
             List<TerrainFeatureIncident> response = new List<TerrainFeatureIncident>();
             foreach (string incident in incidentsName)
             {
-                EventsMod.Log("SetWorldEnvironmentsPatch:: addIncidents --> Incident "+ incident, EventsMod.Logs.DEBUG);
+                EventsMod.log("SetWorldEnvironmentsPatch:: addIncidents --> Incident "+ incident, EventsMod.Logs.DEBUG);
                 TerrainFeatureIncident terrainFeatureIncident = new TerrainFeatureIncident();
 
                 try
@@ -61,7 +62,7 @@ namespace EventsMod.patch
                 {
                     Debug.LogException(ex);
                 }
-                EventsMod.Log("SetWorldEnvironmentsPatch:: addIncidents --> adicionado " + incident, EventsMod.Logs.DEBUG);
+                EventsMod.log("SetWorldEnvironmentsPatch:: addIncidents --> adicionado " + incident, EventsMod.Logs.DEBUG);
             }
             return response;
         }
@@ -70,7 +71,7 @@ namespace EventsMod.patch
 
         private TerrainFeatureIncident AddIncident(TerrainFeatureIncident terrainFeatureIncident)
         {
-            EventsMod.Log("SetWorldEnvironmentsPatch:: AddIncident --> carregou Incidents " + 44, EventsMod.Logs.INFO);
+            EventsMod.log("SetWorldEnvironmentsPatch:: AddIncident --> carregou Incidents " + 44, EventsMod.Logs.INFO);
             terrainFeatureIncident.Type = 44;
             terrainFeatureIncident.MaxPerTile = 1;
             terrainFeatureIncident.SpawnChance = 2000;
