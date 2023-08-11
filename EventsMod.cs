@@ -25,7 +25,7 @@ namespace EventsMod
         {
             //Debug.Log((int)Enum.Parse(typeof(Logs), loglevel));
 
-            if ((int)Enum.Parse(typeof(Logs), loglevel) - (int)level < 1)
+            if ((int)Enum.Parse(typeof(Logs), loglevel) - (int)level >= 0)
             {
                 Debug.Log("["+ level + "    :   EventsMod] " + line);
             }

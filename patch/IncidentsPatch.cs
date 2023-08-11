@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using static Assets.Scripts.Networking.NetworkUpdateType.Thing.LogicUnit;
 using static WorldManager;
 
 namespace EventsMod.patch
@@ -19,6 +20,8 @@ namespace EventsMod.patch
     {
         static List<string> incidentsName = new List<string>();
         String chanincparam = (EventsMod.fconfigEvents["chanincparam"] as ConfigEntry<string>).Value;
+        String incMetName = (EventsMod.fconfigEvents["incMetName"] as ConfigEntry<string>).Value;
+        String confcinc = (EventsMod.fconfigEvents["confcinc"] as ConfigEntry<string>).Value;
 
         public SetWorldEnvironmentsPatch()
         {
@@ -41,21 +44,21 @@ namespace EventsMod.patch
                     {
                         TileSystem.Instance.CurrentIncidentTypes.Add(incident.Type, incident);
                         TileSystem.WorldContainsIncidents = true;
-                        EventsMod.log("SetWorldEnvironmentsPatch:: TakePlantDrinkPatch --> adicionado Incident " + incident.Type, EventsMod.Logs.DEBUG);
+                        EventsMod.log("SetWorldEnvironmentsPatch:: prefixPatch --> adicionado Incident " + incident.Type, EventsMod.Logs.DEBUG);
                     }
                 }
                 EventsMod.log("SetWorldEnvironmentsPatch:: prefixPatch --> carregado", EventsMod.Logs.INFO);
             }
-            //__instance.IncidentFeatures.AddRange(incidentsPatch.addIncidents(incidentsName));
         }
 
         private IEnumerable<TerrainFeatureIncident> addIncidents(List<string> incidentsName)
         {
             EventsMod.log("SetWorldEnvironmentsPatch:: addIncidents --> carregando Incidents", EventsMod.Logs.DEBUG);
             List<TerrainFeatureIncident> response = new List<TerrainFeatureIncident>();
-
-            response.AddRange(confiIncidents());
-
+            if (!String.IsNullOrEmpty(confcinc))
+            {
+                response.AddRange(confiIncidents());
+            }
             foreach (string incident in incidentsName)
             {
                 EventsMod.log("SetWorldEnvironmentsPatch:: addIncidents --> Incident "+ incident, EventsMod.Logs.DEBUG);
@@ -74,32 +77,30 @@ namespace EventsMod.patch
         }
 
         // -------------------------------incidents-------------------------------------------------------
-        private List<TerrainFeatureIncident> confiIncidents()
+        private IEnumerable<TerrainFeatureIncident> confiIncidents()
         {
             EventsMod.log("SetWorldEnvironmentsPatch:: confiIncidents --> adicionando config incidents ", EventsMod.Logs.DEBUG);
             List<TerrainFeatureIncident> response = new List<TerrainFeatureIncident>();
-            String confcinc = (EventsMod.fconfigEvents["confcinc"] as ConfigEntry<string>).Value;
-            if (!String.IsNullOrEmpty(confcinc)) {
-                List<String> configEvent = confcinc.Split('#').ToList();
-                foreach (var item in configEvent)
-                {
-                    TerrainFeatureIncident terrainFeatureIncident = new TerrainFeatureIncident();
-                    List<String> values = item.Split('|').ToList();
-                    EventsMod.log("SetWorldEnvironmentsPatch:: confiIncidents --> adicionando type: " + values[0], EventsMod.Logs.DEBUG);
-                    terrainFeatureIncident.Type = int.Parse(values[0]);
-                    terrainFeatureIncident.MaxPerTile = int.Parse(values[1]);
-                    terrainFeatureIncident.SpawnChance = int.Parse(values[2]);
-                    terrainFeatureIncident.IsRepeating = bool.Parse(values[3]);
-                    terrainFeatureIncident.MaxDelay = int.Parse(values[4]);
-                    terrainFeatureIncident.MinDelay = int.Parse(values[5]);
-                    terrainFeatureIncident.CanLaunchOutsideTile = bool.Parse(values[6]);
-                    terrainFeatureIncident.Serialize = bool.Parse(values[7]);
-                    terrainFeatureIncident.RequiresHumanInTile = bool.Parse(values[8]);
-                    terrainFeatureIncident.RunOnTileEnter = bool.Parse(values[9]);
-                    terrainFeatureIncident.ContainStructures = bool.Parse(values[10]);
-                    response.Add(terrainFeatureIncident);
-                    EventsMod.log("SetWorldEnvironmentsPatch:: confiIncidents --> adicionado", EventsMod.Logs.DEBUG);
-                }
+            List<String> configEvent = confcinc.Split('#').ToList();
+            foreach (var item in configEvent)
+            {
+                TerrainFeatureIncident terrainFeatureIncident = new TerrainFeatureIncident();
+                List<String> values = item.Split('|').ToList();
+                EventsMod.log("SetWorldEnvironmentsPatch:: confiIncidents --> adicionando value: " + item, EventsMod.Logs.DEBUG);
+                EventsMod.log("SetWorldEnvironmentsPatch:: confiIncidents --> adicionando type: " + values[0], EventsMod.Logs.DEBUG);
+                terrainFeatureIncident.Type = int.Parse(values[0]);
+                terrainFeatureIncident.MaxPerTile = int.Parse(values[1]);
+                terrainFeatureIncident.SpawnChance = int.Parse(values[2]);
+                terrainFeatureIncident.IsRepeating = bool.Parse(values[3]);
+                terrainFeatureIncident.MaxDelay = int.Parse(values[4]);
+                terrainFeatureIncident.MinDelay = int.Parse(values[5]);
+                terrainFeatureIncident.CanLaunchOutsideTile = bool.Parse(values[6]);
+                terrainFeatureIncident.Serialize = bool.Parse(values[7]);
+                terrainFeatureIncident.RequiresHumanInTile = bool.Parse(values[8]);
+                terrainFeatureIncident.RunOnTileEnter = bool.Parse(values[9]);
+                terrainFeatureIncident.ContainStructures = bool.Parse(values[10]);
+                response.Add(terrainFeatureIncident);
+                EventsMod.log("SetWorldEnvironmentsPatch:: confiIncidents --> adicionado", EventsMod.Logs.DEBUG);
             }
             return response;
         }
@@ -107,7 +108,6 @@ namespace EventsMod.patch
         private void addMethodNames()
         {
             EventsMod.log("SetWorldEnvironmentsPatch:: addMethodNames --> adicionando incidents names", EventsMod.Logs.DEBUG);
-            String incMetName = (EventsMod.fconfigEvents["incMetName"] as ConfigEntry<string>).Value;
             if (!String.IsNullOrEmpty(incMetName)) {
                 List<String> configEvent = incMetName.Split('#').ToList();
                 foreach (var item in configEvent)
@@ -165,56 +165,20 @@ namespace EventsMod.patch
 
             return terrainFeatureIncident;
         }
-
-
-
-
-
     }
-    /*
-    [HarmonyPatch(typeof(TerrainFeatureSettings))]
-    [HarmonyPatch("Read")]
-    public class IncidentsPatch
+
+    /*[HarmonyPatch(typeof(Incident))]
+    public class IncidentsLog3
     {
-        static List<string> incidentsName = new List<string>();
-
         [UsedImplicitly]
-        [HarmonyPostfix]
-        public static void TakePlantDrinkPatch(RocketBinaryReader reader, ref TerrainFeatureSettings __instance)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Incident), "LoadIncident")]
+        public static void AddIncidentLog3(ref MissionData incidentData)
         {
-            EventsMod.Log("IncidentsPatch:: TakePlantDrinkPatch --> carregando Incidents", EventsMod.Logs.INFO);
-            IncidentsPatch incidentsPatch = new IncidentsPatch();
-            __instance.IncidentFeatures.AddRange(incidentsPatch.addIncidents(incidentsName));
-        }
-
-
-        public IEnumerable<TerrainFeatureIncident> addIncidents(List<string> incidentsName)
-        {
-            List<TerrainFeatureIncident> response = new List<TerrainFeatureIncident>();
-            foreach (string incident in incidentsName)
-            {
-                TerrainFeatureIncident terrainFeatureIncident = new TerrainFeatureIncident();
-
-                response.Add((TerrainFeatureIncident)GetType().GetMethod(incident).Invoke(this, new object[] { terrainFeatureIncident }));
-
+            if (incidentData != null) {
+                EventsMod.log("IncidentsLog3:: AddIncidentLog3 --> Incident " + incidentData.MissionName + " Type: " + incidentData.Type, EventsMod.Logs.INFO);
             }
-            return response;
-        }
-
-        public void AddIncident(TerrainFeatureIncident terrainFeatureIncident)
-        {
-            EventsMod.Log("IncidentsPatch:: TakePlantDrinkPatch --> carregou Incidents " + 44, EventsMod.Logs.INFO);
-            terrainFeatureIncident.Type = 44;
-            terrainFeatureIncident.MaxPerTile = 1;
-            terrainFeatureIncident.SpawnChance = 2000;
-            terrainFeatureIncident.IsRepeating = true;
-            terrainFeatureIncident.MaxDelay = 5;
-            terrainFeatureIncident.MinDelay = 0;
-            terrainFeatureIncident.CanLaunchOutsideTile = true;
-            terrainFeatureIncident.Serialize = false;
-            terrainFeatureIncident.RequiresHumanInTile = false;
-            terrainFeatureIncident.RunOnTileEnter = false;
-            terrainFeatureIncident.ContainStructures = true;
         }
     }*/
+
 }
