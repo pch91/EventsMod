@@ -30,7 +30,6 @@
     </Reference>
 
     <Folder Include="events\" />
-    <Folder Include="patch\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
