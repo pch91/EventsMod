@@ -1,5 +1,40 @@
 # Stationeers mod "Events" for BepInEx.
 
+This mod is intended to inject into your game (saves or new game) predefined and previously created events in a random and parameterized way.
+
+What to expect from this mod?
+
+<h3>spoiler</h3>
+
+<h2>random event injections</h2>
+
+- vanilla event injection
+- injection of custom events (created by you)
+
+<h2>events</h2>
+
+- Loading new events directly from the mod
+
+<h2>predefined events:</h2>
+
+- ColdFlare => type : 94
+- Damage Crops => type: 95
+- Power Surge => type : 96
+- SolarFlare => type : 97
+- Supply Crate (Random) => type : 98
+ 
+<b>To add an event to your game, you must add them to the mod's configuration (EventsMod.conf) in the BeepInEx config folder after the first run.</b>
+
+<h3>adding Events</h3>
+
+Search for "Config custom incidents Values" and put the following text in the value for each event you want to add (for one more event you must separate them by <b>#</b>)
+
+type|MaxPerTile|SpawnChance|IsRepeating|MaxDelay|MinDelay|CanLaunchOutsideTile|Serialize|RequiresHumanInTile|RunOnTileEnter|ContainStructures
+
+<h4>example of adding two events:</h4>
+
+type|MaxPerTile|SpawnChance|IsRepeating|MaxDelay|MinDelay|CanLaunchOutsideTile|Serialize|RequiresHumanInTile|RunOnTileEnter|ContainStructures<b>#</b>type|MaxPerTile|SpawnChance|IsRepeating|MaxDelay|MinDelay|CanLaunchOutsideTile|Serialize|RequiresHumanInTile|R unOnTileEnter|ContainStructures
+
 For info about what this mod does, read the description in Steam Workshop
 
 
